@@ -13,5 +13,5 @@ void test_dynamic_array();
 void test_array_sequence();
 void test_list_sequence();
 void test_immut_array_sequence();
-void test_immut_array_sequence();
+void test_immut_list_sequence();
 #endif

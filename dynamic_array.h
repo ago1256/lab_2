@@ -1,97 +1,147 @@
-#ifndef DYNAMIC_ARRAY_H
-#define DYNAMIC_ARRAY_H
-#include<stdio.h>
+#pragma once
+
+#include "errors.h"
+#include <stdexcept>
 
 template <class T>
-class Dynamic_array{
+class Dynamic_array {
 private:
-    int size;
     T* data;
+    int size;
+
 public:
+    Dynamic_array(T* items, int count);
+    Dynamic_array(int size);
+    Dynamic_array(const Dynamic_array<T>& other);
+    ~Dynamic_array();
 
-Dynamic_array(const T* items, int count) {
+    T get(int index) const;
+    int get_size() const;
+
+    void remove(int index);
+    void set(int index, T value);
+    void resize(int new_size);
+    Dynamic_array<T>* get_sub_array(int start_index, int end_index) const;
+    void print_array(int n);
+    T& operator[](int index);
+    const T& operator[](int index) const;
+};
+
+template <class T>
+Dynamic_array<T>::Dynamic_array(T* items, int count) {
+    if (count < 0)
+        throw Errors::negative_size();
+
     size = count;
     data = new T[size];
-    for(int i=0; i<count; i++){
+    for (int i = 0; i < size; i++)
         data[i] = items[i];
-    }
 }
 
-Dynamic_array(int count) {
-    size = count;
+template <class T>
+Dynamic_array<T>::Dynamic_array(int size) {
+    if (size < 0)
+        throw Errors::negative_size();
+
+    this->size = size;
     data = new T[size];
 }
-Dynamic_array(const Dynamic_array<T> & dynamic_array){
-    size = dynamic_array.size;
+
+template <class T>
+Dynamic_array<T>::Dynamic_array(const Dynamic_array<T>& other) {
+    size = other.size;
     data = new T[size];
-    for(int i=0; i<size; i++){
-        data[i] = dynamic_array.data[i]; 
-    }
+    for (int i = 0; i < size; i++)
+        data[i] = other.data[i];
 }
 
-~Dynamic_array(){
-    delete [] data;
+template <class T>
+Dynamic_array<T>::~Dynamic_array() {
+    delete[] data;
 }
 
-T get(int ind) const{
-    if(ind<0 || ind>=size){
-        throw std::out_of_range("неверно введен индекс");
-    }
-    return data[ind];
+template <class T>
+T Dynamic_array<T>::get(int index) const {
+    if (index < 0 || index >= size)
+        throw Errors::index_out_of_range();
+    return data[index];
 }
 
-int get_size() const{
+template <class T>
+int Dynamic_array<T>::get_size() const {
     return size;
 }
 
-void set(int ind, const T& value){
-    if(ind<0 || ind>=size){
-    throw std::out_of_range("неверно введен индекс");
+template <class T>
+void Dynamic_array<T>::remove(int index) {
+    if (size == 0) return;
+
+    if (index < 0 || index >= size)
+        throw Errors::index_out_of_range();
+
+    for (int i = index; i < size - 1; ++i) {
+        data[i] = data[i + 1];
     }
-    data[ind] = value;
+
+    resize(size - 1);
 }
 
-void resize(int new_size){
-    int min_size = (size < new_size) ? size : new_size;
+template <class T>
+void Dynamic_array<T>::set(int index, T value) {
+    if (index < 0 || index >= size)
+        throw Errors::index_out_of_range();
+    data[index] = value;
+}
+
+template <class T>
+void Dynamic_array<T>::resize(int new_size) {
+    if (new_size < 0)
+        throw Errors::negative_size();
+
     T* new_data = new T[new_size];
-    for(int i=0; i<min_size; i++){
+    int min_size = (new_size < size) ? new_size : size;
+
+    for (int i = 0; i < min_size; i++)
         new_data[i] = data[i];
-    }
-    for (int i=min_size; i < new_size; i++) {
-        new_data[i] = T();
-    }
+
     delete[] data;
     data = new_data;
     size = new_size;
 }
 
-void print_array(int count){
-    for(int i = 0; i<count; i++){
-        std::cout << data[i] << " ";
+template <class T>
+Dynamic_array<T>* Dynamic_array<T>::get_sub_array(int start_index, int end_index) const {
+    if (start_index < 0 || end_index >= size || start_index > end_index)
+        throw Errors::invalid_ind();
+
+    int count = end_index - start_index + 1;
+    T* sub_data = new T[count];
+
+    for (int i = 0; i < count; i++) {
+        sub_data[i] = data[start_index + i];
+    }
+
+    return new Dynamic_array<T>(sub_data, count);
+}
+
+template <class T>
+void Dynamic_array<T>::print_array(int n){
+    for(int i = 0; i < n; i++){
+        std::cout << data[i] << ' ';
     }
     std::cout << std::endl;
 }
-Dynamic_array<T>& operator=(const Dynamic_array<T>& array1) {
-    if (this != &array1) {
-        delete[] data;
-    }
-    size = array1.size;
-    data = new T[size];
-    for (int i = 0; i < size; i++) {
-        data[i] = array1.data[i];
-        }
-    return *this;
-}
 
-
-const T& operator[](int index) const {
-    /*if (index < 0 || index >= size) {
-        throw std::out_of_range("DynamicArray::operator[] out of range");
-    }*/
+template <class T>
+T& Dynamic_array<T>::operator[](int index) {
+    if (index < 0 || index >= size)
+        throw Errors::index_out_of_range();
     return data[index];
 }
+
+template <class T>
+const T& Dynamic_array<T>::operator[](int index) const {
+    if (index < 0 || index >= size)
+        throw Errors::index_out_of_range();
+    return data[index];
 };
-
-
-
-#endif

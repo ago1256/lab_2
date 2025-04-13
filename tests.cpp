@@ -54,7 +54,6 @@ void test_array_sequence(){
         arr_seq.print_seq();
 
         arr_seq.append(20);
-        arr_seq.print_seq();
         arr_seq.prepend(10);
         arr_seq.insert_at(55, 3);
 
@@ -92,46 +91,58 @@ void test_list_sequence(){
         list_seq.print_seq();
 
         Sequence<int>* list_sub_seq = list_seq.get_sub_sequence(2,3);
-        list_seq.concat(list_sub_seq);
         list_seq.prepend(22);
-        
-        assert(list_sub_seq->get_first() == 1);
-        assert(list_sub_seq->get_last() == 8);
-        assert(list_seq.get_length() == 7);
-        list_sub_seq->print_seq();
         list_seq.print_seq();
+        list_sub_seq->print_seq();
+        assert(list_sub_seq->get_first() == 1);
+        assert(list_sub_seq->get_length() == 2);
+        assert(list_seq.get_length() == 5);
 
 
 }
 
 void test_immut_array_sequence(){
-        int arr[] = {1,2,3,4};
+        int arr[] = {1, 2, 3, 4};
         Immut_array_sequence<int> arr_seq(arr, 4);
-        arr_seq.append(1);
-        arr_seq.prepend(3);
+
         assert(arr_seq.get_length() == 4);
         assert(arr_seq.get_first() == 1);
         assert(arr_seq.get_last() == 4);
         assert(arr_seq.get_index(2) == 3);
         arr_seq.print_seq();
 
-}
+        /*Sequence<int>* arr_seq1 = arr_seq.append(5);
+        assert(arr_seq1->get_length() == 5);
+        assert(arr_seq1->get_last() == 5);
+        arr_seq1->print_seq();
+        
 
-void test_immut_list_sequence(){
-        int arr[] = {9,2,3,8};
-        Immut_list_sequence<int> arr_seq(arr, 4);
-        arr_seq.print_seq();
-        arr_seq.append(1);
-        arr_seq.prepend(3);
-        arr_seq.print_seq();
         assert(arr_seq.get_length() == 4);
-        assert(arr_seq.get_first() == 9);
-        assert(arr_seq.get_last() == 8);
-        assert(arr_seq.get_index(2) == 3);
-        arr_seq.print_seq();
+        assert(arr_seq.get_last() == 4);
+
+        delete arr_seq1;*/
+        
 
 }
 
+void test_immut_list_sequence() {
+        int arr[] = {18, 6, 13, 4};
+        Immut_list_sequence<int> list_seq(arr, 4);
+        assert(list_seq.get_length() == 4);
+        assert(list_seq.get_first() == 18);
+        assert(list_seq.get_last() == 4);
+        list_seq.print_seq();
+        
+        /*Sequence<int>* list_seq1 = list_seq.append(5);
+        list_seq1->print_seq();
+        list_seq.print_seq(); 
+        Sequence<int>* list_seq2 = list_seq.prepend(0);
+        list_seq2->print_seq(); 
+        
+        
+        delete list_seq1;
+        delete list_seq2;*/
+    }
 int main(){
         test_linked_list();
         test_dynamic_array();

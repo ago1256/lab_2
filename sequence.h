@@ -1,27 +1,28 @@
-#ifndef SEQUENCE_H
-#define SEQUENCE_H
+#pragma once
 
 template <class T>
-class Sequence{
+class Sequence {
 public:
-    //virtual Sequence();
-    //virtual ~Sequence();
+virtual ~Sequence() = default;
 
-    virtual T get_first() const = 0;
-    virtual T get_last() const = 0;
-    virtual T get_index(int ind) const = 0;
-    virtual Sequence<T>* get_sub_sequence(int start_ind, int end_ind) const = 0;
-    virtual int get_length() const = 0;
+virtual T get_first() const = 0;
+virtual T get_last() const = 0;
+virtual T get_index(int index) const = 0;
+virtual int get_length() const = 0;
+virtual Sequence<T>* get_sub_sequence(int start_index, int end_index) const = 0;
 
-    virtual Sequence<T>* append(const T& item) = 0;
-    virtual Sequence<T>* prepend(const T& item) = 0;
-    virtual Sequence<T>* insert_at(const T& item, int ind) = 0;
-    virtual Sequence<T>* concat(const Sequence<T>* seq) const = 0;
+virtual Sequence<T>* remove(int index) = 0;
 
+virtual Sequence<T>* append(T item) = 0;
+virtual Sequence<T>* prepend(T item) = 0;
+virtual Sequence<T>* insert_at(T item, int index) = 0;
+virtual Sequence<T>* concat(Sequence<T>* list) const = 0;
 
-    virtual Sequence<T>* clone() const = 0;
-    //virtual Sequence<T>* instance() = 0;
-    virtual void print_seq() = 0;
+virtual void print_seq() = 0;
+
+virtual Sequence<T>* append_internal(T item) = 0;
+virtual Sequence<T>* prepend_internal(T item) = 0;
+virtual Sequence<T>* insert_at_internal(T item, int index) = 0;
+virtual Sequence<T>* instance() = 0;
+virtual Sequence<T>* clone() const = 0;
 };
-
-#endif 

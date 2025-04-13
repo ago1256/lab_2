@@ -1,126 +1,148 @@
-#ifndef ARRAY_SEQUENCE_H
-#define ARRAY_SEQUENCE_H
+#pragma once
+
 #include"sequence.h"
 #include"dynamic_array.h"
+#include "errors.h"
+#include <stdexcept>
 
-template <class T>
-class Array_sequence: public Sequence<T>{
-private:
+template <typename T>
+class Array_sequence : public Sequence<T> {
+protected:
     Dynamic_array<T>* items;
     int count;
     int capacity;
 
+    Sequence<T>* create_from_array(Dynamic_array<T>* array) const {
+       return new Array_sequence<T>(*array);
+    }
+
 public:
 Array_sequence(){
-    count = 0;
-    capacity = 2;
-    items = new Dynamic_array<T>(capacity);
-
-}
-
-Array_sequence(const T* data, int count1){
-    count = count1;
-    capacity = count1 * 2;
-    items = new Dynamic_array<T>(data, capacity);
-}
-
-Array_sequence( const Array_sequence<T> &  array){
-    count = array.count;
-    capacity = array.capacity;
-    items = new Dynamic_array<T>(*array.items);
-}
-
-~Array_sequence(){
-    delete items;
-}
-
-virtual T get_first() const override{
-    return items->get(0);
-}
-
-virtual T get_last() const override{
-    return items->get(count - 1);
-}
-
-virtual T get_index(int ind) const override{
-    return items->get(ind);
-}
-
-virtual Sequence<T>* get_sub_sequence(int start_ind, int end_ind) const override{
- 
-    /*if (startIndex < 0 || endIndex < 0 || startIndex > endIndex || endIndex >= count) {
-
-    }*/
-    int new_count = end_ind - start_ind + 1;
-    T* tmp = new T[new_count];
-    for (int i = 0; i < new_count; i++) {
-        tmp[i] = items->get(start_ind + i);
-    }
-    Array_sequence<T>* sub_seq = new Array_sequence<T>(tmp, new_count);
-    delete[] tmp;
-    return sub_seq;
-}
-
-virtual int get_length() const override{
-    return count;
-}
-
-virtual Sequence<T>* append(const T& item) override{
-    if(count == capacity){
-        int new_capacity = capacity * 2;
-        items->resize(new_capacity);
-        capacity = new_capacity;
-    }
-    items->set(count, item);
-    count++;
-    return this;
-}
-
-virtual Sequence<T>* prepend(const T& item) override{
-    if(count == capacity){
-        int new_capacity = capacity * 2;
-        items->resize(new_capacity);
-        capacity = new_capacity;
-    }
-    for(int i = count; i>0; i--){
-        items->set(i, items->get(i-1));
-    }
-    items->set(0, item);
-    count++;
-    return this;
-}
-
-virtual Sequence<T>* insert_at(const T& item, int ind) override{
-    if(count == capacity){
-        int new_capacity = capacity * 2;
-        items->resize(new_capacity);
-        capacity = new_capacity;
+        capacity = 4;
+        count = 0; 
+        items = new Dynamic_array<T>(capacity);
     }
 
-    for(int i = count; i>ind; i--){
-        items->set(i,items->get(i-1));
+    Array_sequence(const Dynamic_array<T>& array) {
+        items = new Dynamic_array<T>(array);
+        count = array.get_size();
+        capacity = count * 2;
     }
-    items->set(ind, item);
-    count++;
-    return this;
-}
 
-virtual Sequence<T>* concat(const Sequence<T>* list)const override{
-    Array_sequence<T>* new_seq = new Array_sequence<T>(*this);
-    for(int i=0; i < list->get_length(); i++){
-        new_seq->append(list->get_index(i));
+    Array_sequence(T* arr, int count_array) {
+        count = count_array;
+        capacity = count_array * 2;
+        items = new Dynamic_array<T>(capacity);
+        for (int i = 0; i < count_array; i++) {
+            items->set(i, arr[i]);
+        }
     }
-    return new_seq;
-}
+
+    Array_sequence(const Array_sequence<T>& other){
+        count = other.count;
+        capacity = other.capacity;
+        items = new Dynamic_array<T>(*other.items);
+    }
 
 
-virtual Sequence<T>* clone() const override{
-    return new Array_sequence<T>(*this);
-}
+    ~Array_sequence() override {
+        delete items;
+    }
 
-void print_seq(){
-    items->print_array(count);
-}
+    T get_first() const override {
+        if (get_length() == 0) throw Errors::empty_array();
+        return items->get(0);
+    }
+
+    T get_last() const override {
+        if (get_length() == 0) throw Errors::empty_array();
+        return items->get(get_length() - 1);
+    }
+
+    T get_index(int index) const override {
+        return items->get(index);
+    }
+
+    int get_length() const override {
+        return count;
+    }
+
+    Sequence<T>* get_sub_sequence(int start_index, int end_index) const override {
+        Dynamic_array<T>* sub = items->get_sub_array(start_index, end_index);
+        return create_from_array(sub);
+        
+    }
+
+    Sequence<T>* concat(Sequence<T>* other) const override {
+        auto other_array = dynamic_cast<const Array_sequence<T>*>(other);
+        if (!other_array) throw Errors::incompatible_types();
+
+        int total_size = count + other_array->count;
+        Dynamic_array<T>* result = new Dynamic_array<T>(total_size);
+        
+        for (int i = 0; i < count; i++) {
+            result->set(i, items->get(i));
+        }
+        for (int j = 0; j < other_array->count; j++) {
+            result->set(j + count, other_array->get_index(j));
+        }
+        
+        return create_from_array(result);
+    }
+
+    Sequence<T>* append(T item) override {
+        if (get_length() == capacity) {
+            capacity *= 2;
+            items->resize(capacity);
+        }
+        items->set(get_length(), item);
+        count++;
+        return this;
+    }
+
+    Sequence<T>* prepend(T item) override {
+        if (get_length() == capacity) {
+            capacity *= 2;
+            items->resize(capacity);
+        }
+        for (int i = get_length(); i > 0; i--) {
+            items->set(i, items->get(i - 1));
+        }
+        items->set(0, item);
+        count++;
+        return this;
+    }
+
+    Sequence<T>* insert_at(T item, int index) override {
+        if (index < 0 || index > get_length()) throw Errors::index_out_of_range();
+        if (get_length() == capacity) {
+            capacity *= 2;
+            items->resize(capacity);
+        }
+        for (int i = get_length(); i > index; i--) {
+            items->set(i, items->get(i - 1));
+        }
+        items->set(index, item);
+        count++;
+        return this;
+    }
+
+    Sequence<T>* remove(int index) override {
+        if (index < 0 || index >= count) throw Errors::index_out_of_range();
+        for (int i = index; i < count - 1; i++) {
+            items->set(i, items->get(i + 1));
+        }
+        count--;
+        return this;
+    }
+
+    void print_seq() override {
+        items->print_array(count);
+    }
+    Sequence<T>* append_internal(T item) override { return append(item); }
+    Sequence<T>* prepend_internal(T item) override { return prepend(item); }
+    Sequence<T>* insert_at_internal(T item, int index) override { return insert_at(item, index); }
+
+    Sequence<T>* instance() override { return this; }
+    Sequence<T>* clone() const override { return new Array_sequence<T>(*this); }
 };
-
-#endif

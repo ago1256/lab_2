@@ -1,52 +1,37 @@
-#ifndef IMMUT_LIST_SEQUENCE_H
-#define IMMUT_LIST_SEQUENCE_H
+#pragma once
+
 #include"list_sequence.h"
+#include "errors.h"
+#include <stdexcept>
 
-
-template <class T>
+template <typename T>
 class Immut_list_sequence : public List_sequence<T> {
 public:
-Immut_list_sequence() : List_sequence<T>() {}
+    using List_sequence<T>::List_sequence;
 
-Immut_list_sequence(T* data, int count1) : List_sequence<T>(data, count1) {}
+    Sequence<T>* append(T item) override {
+        return this->clone()->append_internal(item);
+    }
 
-Immut_list_sequence(const Immut_list_sequence<T>& other) : List_sequence<T>(other) {}
+    Sequence<T>* prepend(T item) override {
+        return this->clone()->prepend_internal(item);
+    }
 
-~Immut_list_sequence() {}
+    Sequence<T>* insert_at(T item, int index) override {
+        return this->clone()->insert_at_internal(item, index);
+    }
 
-virtual Sequence<T>* append(const T& item) override{
-auto* copy_seq = new Immut_list_sequence<T>(*this);
-copy_seq->list->append(item);
-return copy_seq;
-}
+    Sequence<T>* remove(int index) override {
+        return this->clone()->remove(index);
+    }
 
+    Sequence<T>* append_internal(T) override { throw Errors::immutable(); }
+    Sequence<T>* prepend_internal(T) override { throw Errors::immutable(); }
+    Sequence<T>* insert_at_internal(T, int) override { throw Errors::immutable(); }
 
-virtual Sequence<T>* prepend(const T& item) override{
-Immut_list_sequence<T>* copy_seq = new Immut_list_sequence<T>(*this);
-copy_seq->list->prepend(item);
-return copy_seq;
-
-}
-
-virtual Sequence<T>* insert_at(const T& item, int ind) override{
-Immut_list_sequence<T>* copy_seq = new Immut_list_sequence<T>(*this);
-copy_seq->list->insert_at(item, ind);
-return copy_seq;
-
-}
-
-virtual Sequence<T>* concat(const Sequence<T>* other_seq) const override {
-Immut_list_sequence<T>* new_seq = new Immut_list_sequence<T>(*this);
-for (int i = 0; i < other_seq->get_length(); i++) {
-    new_seq->list->append(other_seq->get_index(i));
-}
-return new_seq;
-}
-
-virtual Sequence<T>* clone() const override{
-return new Immut_list_sequence<T>(*this);
-}
-
+    Sequence<T>* instance() override { return this->clone(); }
+    Sequence<T>* clone() const override {
+        return new Immut_list_sequence<T>(*this);
+    }
 };
 
-#endif

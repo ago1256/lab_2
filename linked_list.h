@@ -1,7 +1,8 @@
-#ifndef LINKED_LIST_H
-#define LINKED_LIST_H
+#pragma once
 
-
+#include "errors.h"
+#include<stdio.h>
+#include <stdexcept>
 
 template <class T>
 class Linked_list {
@@ -17,158 +18,218 @@ private:
     int size;
 
 public:
-Linked_list() {
+    Linked_list();
+    Linked_list(T* items, int count);
+    Linked_list(const Linked_list<T>& list);
+    ~Linked_list();
+
+    T get_first() const;
+    T get_last() const;
+    T get(int index) const;
+    Linked_list<T>* get_sub_list(int start_index, int end_index) const;
+    int get_length() const;
+
+    void append(T item);
+    void prepend(T item);
+    void insert_at(T item, int index);
+    void remove(int index);
+    void print_list();
+    Linked_list<T>* concat(Linked_list<T>* list);
+};
+
+template <class T>
+Linked_list<T>::Linked_list() {
     root = nullptr;
     size = 0;
 }
 
-Linked_list(T* items, int count) : Linked_list() {
-    if(count > 0) {
-        for(int i = 0; i < count; i++) {
-            append(items[i]);
-        }
+template <class T>
+Linked_list<T>::Linked_list(T* items, int count) {
+    if (count < 0) {
+        throw Errors::negative_count();
+    }
+
+    if (count == 0) {
+        root = nullptr;
+        size = 0;
+        return;
+    }
+
+    size = count;
+    root = new Node{items[0], nullptr};
+    Node* current = root;
+
+    for (int i = 1; i < count; i++) {
+        Node* new_node = new Node{items[i], nullptr};
+        current->next = new_node;
+        current = new_node;
     }
 }
 
-Linked_list(const Linked_list<T>& list) : Linked_list() {
-    Node* curr = list.root;
-    while(curr != nullptr) {
-        append(curr->data);
-        curr = curr->next;
+template <class T>
+Linked_list<T>::Linked_list(const Linked_list<T>& list) {
+    if (list.root == nullptr) {
+        root = nullptr;
+        size = 0;
+        return;
     }
+
+    root = new Node{list.root->data, nullptr};
+    Node* current_this = root;
+    Node* current_other = list.root->next;
+
+    while (current_other != nullptr) {
+        current_this->next = new Node{current_other->data, nullptr};
+        current_this = current_this->next;
+        current_other = current_other->next;
+    }
+
+    size = list.size;
 }
 
-~Linked_list() {
-    Node* cur = root;
-    while(cur != nullptr) {
-        Node* tmp = cur;
-        cur = cur->next;
-        delete tmp;
-    }
-    root = nullptr;
-    size = 0;
+template <class T>
+Linked_list<T>::~Linked_list() {
+    Node* current = root;
+    while (current != nullptr) {
+        Node* temp = current;
+        current = current->next;
+        delete temp;
+    }    
 }
 
-T get_first() const {
-    if(root == nullptr) {
-       throw std::out_of_range("пустой список");
+template <class T>
+T Linked_list<T>::get_first() const {
+    if (root == nullptr) {
+        throw Errors::empty_list();
     }
     return root->data;
 }
 
-T get_last() const {
-    if(root == nullptr) {
-        throw std::out_of_range("пустой список");
+template <class T>
+T Linked_list<T>::get_last() const {
+    if (root == nullptr) {
+        throw Errors::empty_list();
     }
-    Node* curr = root;
-    while(curr->next != nullptr) {
-        curr = curr->next;
+
+    Node* current = root;
+    while (current->next != nullptr) {
+        current = current->next;
     }
-    return curr->data;
+    return current->data;
 }
 
-T get(int ind) const {
-    if(root == nullptr || ind < 0 || ind >= size) {
-        throw std::out_of_range("неверно введен индекс");
+template <class T>
+T Linked_list<T>::get(int index) const {
+    if (root == nullptr) {
+        throw Errors::empty_list();
     }
-    Node* curr = root;
-    for(int i = 0; i < ind; i++) {
-        curr = curr->next;
+
+    if (index < 0 || index >= size) {
+        throw Errors::index_out_of_range();
     }
-    return curr->data;
+
+    Node* current = root;
+    for (int i = 0; i < index; i++) {
+        current = current->next;
+    }
+    return current->data;
 }
 
-Linked_list<T>* get_sub_list(int start_ind, int end_ind) const {
-    if(start_ind < 0 || start_ind >= size || end_ind < 0 || end_ind >= size) {
-        throw std::out_of_range("неверно введен индекс");
+template <class T>
+Linked_list<T>* Linked_list<T>::get_sub_list(int start_index, int end_index) const {
+    if (start_index < 0 || end_index >= size || start_index > end_index) {
+        throw Errors::invalid_indices();
     }
+
     Linked_list<T>* sub_list = new Linked_list<T>();
-    Node* curr = root;
-    for(int i = 0; i < start_ind; i++) {
-        curr = curr->next;
+    Node* current = root;
+
+    for (int i = 0; i < start_index; i++) {
+        current = current->next;
     }
-    for(int i = start_ind; i <= end_ind; i++) {
-        sub_list->append(curr->data);
-        curr = curr->next;
+
+    sub_list->append(current->data);
+
+    for (int i = start_index + 1; i <= end_index; i++) {
+        current = current->next;
+        sub_list->append(current->data);
     }
+
     return sub_list;
 }
 
-int get_length() const {
+template <class T>
+int Linked_list<T>::get_length() const {
     return size;
 }
 
-void append(T item) {
-    Node* new_node = new Node{item, nullptr};
-    if(root == nullptr) {
+template <class T>
+void Linked_list<T>::append(T item) {
+    Node* new_node = new Node{item, nullptr};  
+    if (root == nullptr) {
         root = new_node;
-    }
-    else {
-        Node* curr = root;
-        while(curr->next != nullptr) {
-            curr = curr->next;
+    } else {
+        Node* current = root;
+        while (current->next != nullptr) {
+            current = current->next;
         }
-        curr->next = new_node;
+        current->next = new_node;
     }
     size++;
 }
 
-void prepend(T item) {
+template <class T>
+void Linked_list<T>::prepend(T item) {
     Node* new_node = new Node{item, root};
     root = new_node;
     size++;
 }
 
-void insert_at(T item, int ind) {
-    if(ind < 0 || ind >= size) {
-        throw std::out_of_range("неверно введен индекс");
+template <class T>
+void Linked_list<T>::insert_at(T item, int index) {
+    if (index > size || index < 0) {
+        throw Errors::index_out_of_range();
     }
-    
-    if(ind == 0) {
+
+    if (index == 0) {
         prepend(item);
+        return;
     }
-    else {
-        Node* curr = root;
-        for(int i = 0; i < ind-1; i++) {
-            curr = curr->next;
-        }
-        Node* new_node = new Node{item, curr->next};
-        curr->next = new_node;
-        size++;
+
+    Node* current = root;
+    for (int i = 0; i < index - 1; i++) {
+        current = current->next;
     }
+    Node* new_node = new Node{item, current->next};
+    current->next = new_node;
+    size++;
 }
 
-void remove(int ind) {
-    if(ind < 0 || ind >= size) throw std::out_of_range("неверно введен индекс");
+template <class T>
+void Linked_list<T>::remove(int index) {
+    if (size == 0) return;
     
-    if(ind == 0) {
-        Node* tmp = root;
-        root = root->next;
-        delete tmp;
+    if (index < 0 || index >= size) {
+        throw Errors::index_out_of_range();
     }
-    else {
-        Node* curr = root;
-        for(int i = 0; i < ind-1; i++) {
-            curr = curr->next;
+
+    if (index == 0) {
+        Node* temp = root;
+        root = root->next;
+        delete temp;
+    } else {
+        Node* current = root;
+        for (int i = 0; i < index - 1; i++) {
+            current = current->next;
         }
-        Node* tmp = curr->next;
-        curr->next = tmp->next;
-        delete tmp;
+        Node* temp = current->next;
+        current->next = temp->next;
+        delete temp;
     }
     size--;
 }
-
-Linked_list<T>* concat(Linked_list<T>* list) {
-    Linked_list<T>* new_list = new Linked_list<T>(*this);
-    Node* curr = list->root;
-    while(curr != nullptr) {
-        new_list->append(curr->data);
-        curr = curr->next;
-    }
-    return new_list;
-}
-
-void print_list() {
+template <class T>
+void Linked_list<T>::print_list(){
     Node* curr = root;
     while(curr != nullptr) {
         std::cout << curr->data << " ";
@@ -177,17 +238,17 @@ void print_list() {
     std::cout << std::endl;
 }
 
-Linked_list<T>& operator=(const Linked_list<T>& list1) {
-    if (this != &list1) {
-        ~Linked_list();
-        Node* curr = list1.root;
-        while (curr) {
-            this->append(curr->data);
-            curr = curr->next;
-        }
+template <class T>
+Linked_list<T>* Linked_list<T>::concat(Linked_list<T>* list) {
+    if (list == nullptr) {
+        throw Errors::null_list();
     }
-    return *this;
-}
-};
 
-#endif
+    Linked_list<T>* result = new Linked_list<T>(*this);
+    Node* current = list->root;
+    while (current != nullptr) {
+        result->append(current->data);
+        current = current->next;
+    }
+    return result;  
+};
