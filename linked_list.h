@@ -57,12 +57,12 @@ Linked_list<T>::Linked_list(T* items, int count) {
 
     size = count;
     root = new Node{items[0], nullptr};
-    Node* current = root;
+    Node* curr = root;
 
     for (int i = 1; i < count; i++) {
         Node* new_node = new Node{items[i], nullptr};
-        current->next = new_node;
-        current = new_node;
+        curr->next = new_node;
+        curr = new_node;
     }
 }
 
@@ -75,13 +75,13 @@ Linked_list<T>::Linked_list(const Linked_list<T>& list) {
     }
 
     root = new Node{list.root->data, nullptr};
-    Node* current_this = root;
-    Node* current_other = list.root->next;
+    Node* curr_this = root;
+    Node* curr_other = list.root->next;
 
-    while (current_other != nullptr) {
-        current_this->next = new Node{current_other->data, nullptr};
-        current_this = current_this->next;
-        current_other = current_other->next;
+    while (curr_other != nullptr) {
+        curr_this->next = new Node{curr_other->data, nullptr};
+        curr_this = curr_this->next;
+        curr_other = curr_other->next;
     }
 
     size = list.size;
@@ -89,10 +89,10 @@ Linked_list<T>::Linked_list(const Linked_list<T>& list) {
 
 template <class T>
 Linked_list<T>::~Linked_list() {
-    Node* current = root;
-    while (current != nullptr) {
-        Node* temp = current;
-        current = current->next;
+    Node* curr = root;
+    while (curr != nullptr) {
+        Node* temp = curr;
+        curr = curr->next;
         delete temp;
     }    
 }
@@ -111,11 +111,11 @@ T Linked_list<T>::get_last() const {
         throw Errors::empty_list();
     }
 
-    Node* current = root;
-    while (current->next != nullptr) {
-        current = current->next;
+    Node* curr = root;
+    while (curr->next != nullptr) {
+        curr = curr->next;
     }
-    return current->data;
+    return curr->data;
 }
 
 template <class T>
@@ -128,31 +128,31 @@ T Linked_list<T>::get(int index) const {
         throw Errors::index_out_of_range();
     }
 
-    Node* current = root;
+    Node* curr = root;
     for (int i = 0; i < index; i++) {
-        current = current->next;
+        curr = curr->next;
     }
-    return current->data;
+    return curr->data;
 }
 
 template <class T>
 Linked_list<T>* Linked_list<T>::get_sub_list(int start_index, int end_index) const {
     if (start_index < 0 || end_index >= size || start_index > end_index) {
-        throw Errors::invalid_indices();
+        throw Errors::invalid_ind();
     }
 
     Linked_list<T>* sub_list = new Linked_list<T>();
-    Node* current = root;
+    Node* curr = root;
 
     for (int i = 0; i < start_index; i++) {
-        current = current->next;
+        curr = curr->next;
     }
 
-    sub_list->append(current->data);
+    sub_list->append(curr->data);
 
     for (int i = start_index + 1; i <= end_index; i++) {
-        current = current->next;
-        sub_list->append(current->data);
+        curr = curr->next;
+        sub_list->append(curr->data);
     }
 
     return sub_list;
@@ -169,11 +169,11 @@ void Linked_list<T>::append(T item) {
     if (root == nullptr) {
         root = new_node;
     } else {
-        Node* current = root;
-        while (current->next != nullptr) {
-            current = current->next;
+        Node* curr = root;
+        while (curr->next != nullptr) {
+            curr = curr->next;
         }
-        current->next = new_node;
+        curr->next = new_node;
     }
     size++;
 }
@@ -196,12 +196,12 @@ void Linked_list<T>::insert_at(T item, int index) {
         return;
     }
 
-    Node* current = root;
+    Node* curr = root;
     for (int i = 0; i < index - 1; i++) {
-        current = current->next;
+        curr = curr->next;
     }
-    Node* new_node = new Node{item, current->next};
-    current->next = new_node;
+    Node* new_node = new Node{item, curr->next};
+    curr->next = new_node;
     size++;
 }
 
@@ -218,23 +218,26 @@ void Linked_list<T>::remove(int index) {
         root = root->next;
         delete temp;
     } else {
-        Node* current = root;
+        Node* curr = root;
         for (int i = 0; i < index - 1; i++) {
-            current = current->next;
+            curr = curr->next;
         }
-        Node* temp = current->next;
-        current->next = temp->next;
+        Node* temp = curr->next;
+        curr->next = temp->next;
         delete temp;
     }
     size--;
 }
+
 template <class T>
 void Linked_list<T>::print_list(){
     Node* curr = root;
+    std::cout << "[ ";
     while(curr != nullptr) {
         std::cout << curr->data << " ";
         curr = curr->next;
     }
+    std::cout << "]";
     std::cout << std::endl;
 }
 
@@ -245,10 +248,10 @@ Linked_list<T>* Linked_list<T>::concat(Linked_list<T>* list) {
     }
 
     Linked_list<T>* result = new Linked_list<T>(*this);
-    Node* current = list->root;
-    while (current != nullptr) {
-        result->append(current->data);
-        current = current->next;
+    Node* curr = list->root;
+    while (curr != nullptr) {
+        result->append(curr->data);
+        curr = curr->next;
     }
     return result;  
 };

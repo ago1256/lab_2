@@ -111,7 +111,7 @@ void test_immut_array_sequence(){
         assert(arr_seq.get_index(2) == 3);
         arr_seq.print_seq();
 
-        /*Sequence<int>* arr_seq1 = arr_seq.append(5);
+        Sequence<int>* arr_seq1 = arr_seq.append(5);
         assert(arr_seq1->get_length() == 5);
         assert(arr_seq1->get_last() == 5);
         arr_seq1->print_seq();
@@ -120,7 +120,7 @@ void test_immut_array_sequence(){
         assert(arr_seq.get_length() == 4);
         assert(arr_seq.get_last() == 4);
 
-        delete arr_seq1;*/
+        delete arr_seq1;
         
 
 }

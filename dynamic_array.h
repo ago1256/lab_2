@@ -126,18 +126,15 @@ Dynamic_array<T>* Dynamic_array<T>::get_sub_array(int start_index, int end_index
 
 template <class T>
 void Dynamic_array<T>::print_array(int n){
+    std::cout << "[ ";
     for(int i = 0; i < n; i++){
         std::cout << data[i] << ' ';
     }
+    std::cout << "]";
     std::cout << std::endl;
 }
 
-template <class T>
-T& Dynamic_array<T>::operator[](int index) {
-    if (index < 0 || index >= size)
-        throw Errors::index_out_of_range();
-    return data[index];
-}
+
 
 template <class T>
 const T& Dynamic_array<T>::operator[](int index) const {

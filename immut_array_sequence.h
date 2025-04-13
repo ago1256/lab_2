@@ -25,6 +25,19 @@ public:
         return this->clone()->remove(index);
     }
 
+    Immut_array_sequence& operator=(const Immut_array_sequence& other) {
+        if (this == &other) { 
+            return *this;
+        }
+        if (this->get_length() == 0) {
+            Array_sequence<T>::operator=(other);
+        } else {
+            throw Errors::immutable();
+        }
+        return *this;
+    }
+
+
     Sequence<T>* append_internal(T) override { throw Errors::immutable(); }
     Sequence<T>* prepend_internal(T) override { throw Errors::immutable(); }
     Sequence<T>* insert_at_internal(T, int) override { throw Errors::immutable(); }

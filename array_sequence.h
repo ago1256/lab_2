@@ -33,7 +33,7 @@ Array_sequence(){
         count = count_array;
         capacity = count_array * 2;
         items = new Dynamic_array<T>(capacity);
-        for (int i = 0; i < count_array; i++) {
+        for (int i=0; i<count_array; i++) {
             items->set(i, arr[i]);
         }
     }
@@ -77,8 +77,8 @@ Array_sequence(){
         auto other_array = dynamic_cast<const Array_sequence<T>*>(other);
         if (!other_array) throw Errors::incompatible_types();
 
-        int total_size = count + other_array->count;
-        Dynamic_array<T>* result = new Dynamic_array<T>(total_size);
+        int res_size = count + other_array->count;
+        Dynamic_array<T>* result = new Dynamic_array<T>(res_size);
         
         for (int i = 0; i < count; i++) {
             result->set(i, items->get(i));
@@ -135,10 +135,35 @@ Array_sequence(){
         count--;
         return this;
     }
+    Array_sequence<T>& operator=(const Array_sequence<T>& other) {
+        if (this != &other) {
+            this->clear();
+            if (other.capacity > 0) {
+                items = new Dynamic_array<T>(other.capacity);
+                capacity = other.capacity;
+            } else {
+                items = nullptr;
+                capacity = 0;
+            }
+            count = other.count;
+            for (int i = 0; i < count; ++i) {
+                (*items)[i] = other.items->get(i);
+            }
+        }
+        return *this;
+    }
 
     void print_seq() override {
         items->print_array(count);
     }
+
+    void clear() {
+        delete[] items;
+        items = nullptr;
+        count = 0;
+        capacity = 0;
+    }
+
     Sequence<T>* append_internal(T item) override { return append(item); }
     Sequence<T>* prepend_internal(T item) override { return prepend(item); }
     Sequence<T>* insert_at_internal(T item, int index) override { return insert_at(item, index); }
