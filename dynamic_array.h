@@ -1,7 +1,9 @@
 #pragma once
 
 #include "errors.h"
+#include <stdio.h>
 #include <stdexcept>
+
 
 template <class T>
 class Dynamic_array {
@@ -29,8 +31,10 @@ public:
 
 template <class T>
 Dynamic_array<T>::Dynamic_array(T* items, int count) {
-    if (count < 0)
-        throw Errors::negative_size();
+    if (count < 0) {
+        errors_detection(3);
+        throw Error(3);
+    }
 
     size = count;
     data = new T[size];
@@ -40,19 +44,23 @@ Dynamic_array<T>::Dynamic_array(T* items, int count) {
 
 template <class T>
 Dynamic_array<T>::Dynamic_array(int size) {
-    if (size < 0)
-        throw Errors::negative_size();
+    if (size < 0) {
+        errors_detection(3); 
+        throw Error(3);
+    }
 
     this->size = size;
     data = new T[size];
 }
 
+
 template <class T>
 Dynamic_array<T>::Dynamic_array(const Dynamic_array<T>& other) {
     size = other.size;
     data = new T[size];
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size; i++){
         data[i] = other.data[i];
+        }
 }
 
 template <class T>
@@ -62,8 +70,11 @@ Dynamic_array<T>::~Dynamic_array() {
 
 template <class T>
 T Dynamic_array<T>::get(int index) const {
-    if (index < 0 || index >= size)
-        throw Errors::index_out_of_range();
+    if (index < 0 || index >= size) {
+        errors_detection(2); 
+        throw Error(2);
+    }
+
     return data[index];
 }
 
@@ -74,35 +85,50 @@ int Dynamic_array<T>::get_size() const {
 
 template <class T>
 void Dynamic_array<T>::remove(int index) {
-    if (size == 0) return;
-
-    if (index < 0 || index >= size)
-        throw Errors::index_out_of_range();
+    if (size == 0) {
+        errors_detection(4);
+        throw Error(4);
+    }
+    if (index < 0 || index >= size) {
+        errors_detection(2); 
+        throw Error(2);
+    }
 
     for (int i = index; i < size - 1; ++i) {
         data[i] = data[i + 1];
     }
-
-    resize(size - 1);
+    size--; 
 }
 
 template <class T>
 void Dynamic_array<T>::set(int index, T value) {
-    if (index < 0 || index >= size)
-        throw Errors::index_out_of_range();
+    if (index < 0 || index >= size) {
+        errors_detection(2); 
+        throw Error(2);
+    }
     data[index] = value;
 }
 
 template <class T>
 void Dynamic_array<T>::resize(int new_size) {
-    if (new_size < 0)
-        throw Errors::negative_size();
+    if (new_size < 0) {
+        errors_detection(3);
+        throw Error(3);
+    }
+
+    if (new_size == 0) {
+        delete[] data;
+        data = nullptr;
+        size = 0;
+        return;
+    }
 
     T* new_data = new T[new_size];
-    int min_size = (new_size < size) ? new_size : size;
+    int elements_to_copy = (new_size < size) ? new_size : size;
 
-    for (int i = 0; i < min_size; i++)
+    for (int i = 0; i < elements_to_copy; i++) {
         new_data[i] = data[i];
+    }
 
     delete[] data;
     data = new_data;
@@ -111,8 +137,10 @@ void Dynamic_array<T>::resize(int new_size) {
 
 template <class T>
 Dynamic_array<T>* Dynamic_array<T>::get_sub_array(int start_index, int end_index) const {
-    if (start_index < 0 || end_index >= size || start_index > end_index)
-        throw Errors::invalid_ind();
+    if (start_index < 0 || end_index >= size || start_index > end_index) {
+        errors_detection(2); 
+        throw Error(2);
+    }
 
     int count = end_index - start_index + 1;
     T* sub_data = new T[count];
@@ -125,20 +153,28 @@ Dynamic_array<T>* Dynamic_array<T>::get_sub_array(int start_index, int end_index
 }
 
 template <class T>
-void Dynamic_array<T>::print_array(int n){
+void Dynamic_array<T>::print_array(int n) {
     std::cout << "[ ";
-    for(int i = 0; i < n; i++){
+    for(int i = 0; i < n; i++) {
         std::cout << data[i] << ' ';
     }
-    std::cout << "]";
-    std::cout << std::endl;
+    std::cout << "]" << std::endl;
 }
 
-
+template <class T>
+T& Dynamic_array<T>::operator[](int index) {
+    if (index < 0 || index >= size) {
+        errors_detection(2); 
+        throw Error(2);
+    }
+    return data[index];
+}
 
 template <class T>
 const T& Dynamic_array<T>::operator[](int index) const {
-    if (index < 0 || index >= size)
-        throw Errors::index_out_of_range();
+    if (index < 0 || index >= size) {
+        errors_detection(2);
+        throw Error(2);
+    }
     return data[index];
-};
+}

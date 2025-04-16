@@ -16,13 +16,11 @@ virtual Sequence<T>* remove(int index) = 0;
 virtual Sequence<T>* append(T item) = 0;
 virtual Sequence<T>* prepend(T item) = 0;
 virtual Sequence<T>* insert_at(T item, int index) = 0;
-virtual Sequence<T>* concat(Sequence<T>* list) const = 0;
+virtual Sequence<T>* concat(const Sequence<T>* list) const = 0;
 
-virtual void print_seq() = 0;
+virtual void print_seq() const= 0;
 
-virtual Sequence<T>* append_internal(T item) = 0;
-virtual Sequence<T>* prepend_internal(T item) = 0;
-virtual Sequence<T>* insert_at_internal(T item, int index) = 0;
 virtual Sequence<T>* instance() = 0;
 virtual Sequence<T>* clone() const = 0;
+virtual bool operator==(const Sequence<T>& other) const = 0;
 };

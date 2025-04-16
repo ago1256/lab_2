@@ -6,32 +6,63 @@
 
 template <typename T>
 class Immut_list_sequence : public List_sequence<T> {
-public:
+    public:
     using List_sequence<T>::List_sequence;
 
-    Sequence<T>* append(T item) override {
-        return this->clone()->append_internal(item);
-    }
+    Sequence<T>* append(T item) override;
+    Sequence<T>* prepend(T item) override;
+    Sequence<T>* insert_at(T item, int index) override;
+    Sequence<T>* remove(int index) override;
+    Sequence<T>* concat(const Sequence<T>* other) const override;
 
-    Sequence<T>* prepend(T item) override {
-        return this->clone()->prepend_internal(item);
-    }
-
-    Sequence<T>* insert_at(T item, int index) override {
-        return this->clone()->insert_at_internal(item, index);
-    }
-
-    Sequence<T>* remove(int index) override {
-        return this->clone()->remove(index);
-    }
-
-    Sequence<T>* append_internal(T) override { throw Errors::immutable(); }
-    Sequence<T>* prepend_internal(T) override { throw Errors::immutable(); }
-    Sequence<T>* insert_at_internal(T, int) override { throw Errors::immutable(); }
-
-    Sequence<T>* instance() override { return this->clone(); }
-    Sequence<T>* clone() const override {
-        return new Immut_list_sequence<T>(*this);
-    }
+    Sequence<T>* instance() override;
+    Sequence<T>* clone() const override;
 };
 
+
+template <typename T>
+Sequence<T>* Immut_list_sequence<T>::append(T item) {
+    auto* copy_seq= new Immut_list_sequence<T>(*this);
+    copy_seq->List_sequence<T>::append(item);
+    return copy_seq;
+}
+
+template <typename T>
+Sequence<T>* Immut_list_sequence<T>::prepend(T item) {
+    auto* copy_seq= new Immut_list_sequence<T>(*this);
+    copy_seq->List_sequence<T>::prepend(item);
+    return copy_seq;
+}
+
+template <typename T>
+Sequence<T>* Immut_list_sequence<T>::insert_at(T item, int ind) {
+    auto* copy_seq= new Immut_list_sequence<T>(*this);
+    copy_seq->List_sequence<T>::insert_at(item, ind);
+    return copy_seq;
+}
+
+template <typename T>
+Sequence<T>* Immut_list_sequence<T>::concat(const Sequence<T>* other) const{
+    auto* new_seq= new Immut_list_sequence<T>(*this);
+    new_seq->List_sequence<T>::concat(other);
+    return new_seq;
+}
+
+
+template <typename T>
+Sequence<T>* Immut_list_sequence<T>::remove(int ind) {
+    auto* copy_seq= new Immut_list_sequence<T>(*this);
+    copy_seq->List_sequence<T>::remove(ind);
+    return copy_seq;
+}
+
+
+template <typename T>
+Sequence<T>* Immut_list_sequence<T>::instance() {
+     return this->clone(); 
+    }
+
+template <typename T>
+Sequence<T>* Immut_list_sequence<T>::clone() const {
+    return new Immut_list_sequence<T>(*this);
+}

@@ -1,51 +1,43 @@
 #pragma once
 
+#include<iostream>
 #include <stdexcept>
 #include <string>
 
-namespace Errors {
-    inline std::logic_error immutable() {
-        return std::logic_error("неизменяемая последовательность");
+class Error{
+    private:
+        int code;
+        std::string mess;
+        const std::string errors[6]{
+            "ОК",//0
+            "Неизменяемая последовательность.\n ",//1
+            "Неправильный индекс.\n ",//2
+            "Неправильный аргумент.\n ",//3
+            "Пустая последовательность.\n",//4,
+            "Несовместимые типы.\n "//5
+        };
+    public:
+    Error(int c){
+        code = c;
+        mess = errors[c];
+    }
+    std::string get_mess(){
+        return mess;
+    }
+    int get_code(){
+        return code;
     }
 
-    inline std::out_of_range index_out_of_range() {
-        return std::out_of_range("Неверно введен индекс");
+    void errors_detection(int c) {
+    Error error = Error(c);
+    if (error.get_code() == 0) {
+        std::cout << error.get_mess();
+        return;
     }
-
-    inline std::invalid_argument invalid_argument() {
-        return std::invalid_argument("Неверно введен аргумент");
-    }
-
-    inline std::out_of_range empty_array() {
-        return std::out_of_range("Пустой массив");
-    }
-
-    inline std::out_of_range empty_list() {
-        return std::out_of_range("Пустой список");
-    }
-
-    inline std::invalid_argument incompatible_types() {
-        return std::invalid_argument("Несовместимые типы");
-    }
-
-    inline std::runtime_error empty_value() {
-        return std::runtime_error("Пустое значение");
-    }
-
-    inline std::invalid_argument negative_size() {
-        return std::invalid_argument("Отрицательный индекс");
-    }
-
-    inline std::out_of_range invalid_ind() {
-        return std::out_of_range("Invalid index");
-    }
-
-    inline std::invalid_argument negative_count() {
-        return std::invalid_argument("Negative count");
-    }
-
-    inline std::invalid_argument null_list() {
-        return std::invalid_argument("Null list");
+    else{
+        std::cout << error.get_mess();
     }
 }
+};
 
+void errors_detection(int er);
