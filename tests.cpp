@@ -287,6 +287,7 @@ void test_list_sequence_insert() {
         seq.append(1);
         seq.append(3);
         seq.insert_at(2, 1);
+        
         expected.append(1);
         expected.append(2);
         expected.append(3);
@@ -398,7 +399,6 @@ void test_immut_array_sequence_immutability() {
         Sequence<int>* new_seq = seq.append(4);
         assert(new_seq->get_last() == 4);
         assert(seq.get_last() == 3);
-
         std::cout << "пройден\n";
 }
 

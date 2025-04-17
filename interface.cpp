@@ -12,6 +12,8 @@
 int enter() {
     std::vector<Any_sequence> all_sequences;
     while (true) {
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        system("cls"); 
         try{
         std::cout << "Действия:\n";
         std::cout << "1 Добавить новую последовательность\n";
@@ -78,7 +80,7 @@ int enter() {
         }
         catch(Error er){
             errors_detection(er.get_code());
-            break;
+            continue;
         }
     }
 }
