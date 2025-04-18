@@ -87,8 +87,8 @@ Array_sequence<T>::~Array_sequence() {
 template <typename T>
 T Array_sequence<T>::get_first() const {
     if (get_length() == 0) {
-        errors_detection(4);
-        throw Error(4);
+        errors_detection(Error::EMPTY_SEQ);
+        throw Error(Error::EMPTY_SEQ);
     }
     return items->get(0);
 }
@@ -174,18 +174,15 @@ Sequence<T>* Array_sequence<T>::insert_at(T item, int index) {
 template <typename T>
 Sequence<T>* Array_sequence<T>::remove(int ind) {
     if (count == 0) {
-        errors_detection(4);
-        throw Error(4);
+        errors_detection(Error::EMPTY_SEQ);
+        throw Error(Error::EMPTY_SEQ);
     }
     if (count>0){
     items->remove(ind);
     count--;
     return this;
     }
-    if(count<0){
-        errors_detection(4);
-        throw Error(4);
-    }
+    /////////////////////////////////////////////////////////////////
 }
 
 template <typename T>

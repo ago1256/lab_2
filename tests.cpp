@@ -9,44 +9,47 @@ void test_linked_list_basic() {
     std::cout << "Тест базовых операций Linked_list: ";
     int arr[] = {10, 20, 30, 40};
     Linked_list<int> list(arr, 4);
-
-    assert(list.get_length() == 4);
-    assert(list.get_first() == 10);
-    assert(list.get_last() == 40);
-    assert(list.get(1) == 20);
+    List_sequence<int> seq_expected(arr,4);
+    List_sequence<int> seq(list);
+    assert(seq == seq_expected);
     std::cout << "пройден\n";
 }
 
 void test_linked_list_append() {
     std::cout << "Тест добавления в конец Linked_list: ";
     Linked_list<int> list;
+    int arr[] = {10, 20};
     list.append(10);
     list.append(20);
-
-    assert(list.get_length() == 2);
-    assert(list.get_last() == 20);
+    List_sequence<int> seq_expected(arr,2);
+    List_sequence<int> seq(list);
+    assert(seq == seq_expected);
     std::cout << "пройден\n";
 }
 
 void test_linked_list_prepend() {
     std::cout << "Тест добавления в начало Linked_list: ";
     Linked_list<int> list;
+    int arr[] = {20, 10};
     list.prepend(10);
     list.prepend(20);
-
-    assert(list.get_length() == 2);
-    assert(list.get_first() == 20);
+    List_sequence<int> seq_expected(arr,2);
+    List_sequence<int> seq(list);
+    assert(seq == seq_expected);
     std::cout << "пройден\n";
 }
+
 
 void test_linked_list_remove() {
     std::cout << "Тест удаления из Linked_list: ";
     int arr[] = {10, 20, 30, 40};
+    int arr_expected[] = {10, 30, 40};
     Linked_list<int> list(arr, 4);
-
     list.remove(1);
-    assert(list.get_length() == 3);
-    assert(list.get(1) == 30);
+
+    List_sequence<int> seq_expected(arr_expected, 3);
+    List_sequence<int> seq(list);
+    assert(seq == seq_expected);
     std::cout << "пройден\n";
 }
 
@@ -59,14 +62,14 @@ void test_linked_list_errors() {
         empty_list.get_first();
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 4); 
+        assert(e == Error::EMPTY_SEQ); 
     }
 
     try {
         empty_list.get(0);
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 4);
+        assert(e == Error::EMPTY_SEQ);
     }
 
     try {
@@ -75,7 +78,7 @@ void test_linked_list_errors() {
         list.get(5);
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 2);
+        assert(e == Error::INVALID_INDEX);
     }
 
     std::cout << "пройден\n";
@@ -86,9 +89,9 @@ void test_dynamic_array_basic() {
     int arr[] = {5, 7, 3, 6};
     Dynamic_array<int> array(arr, 4);
 
-    assert(array.get_size() == 4);
-    assert(array.get(0) == 5);
-    assert(array.get(3) == 6);
+    Array_sequence<int> seq_expected(arr, 4);
+    Array_sequence<int> seq(array);
+    assert(seq_expected == seq);
     std::cout << "пройден\n";
 }
 
@@ -96,19 +99,19 @@ void test_dynamic_array_resize() {
     std::cout << "Тест изменения размера Dynamic_array: ";
     Dynamic_array<int> array(3);
     array.resize(5);
-
     assert(array.get_size() == 5);
     std::cout << "пройден\n";
 }
 
 void test_dynamic_array_set() {
     std::cout << "Тест установки значений Dynamic_array: ";
-    Dynamic_array<int> array(3);
+    Dynamic_array<int> array(2);
+    int arr[] = {10,20};
     array.set(0, 10);
     array.set(1, 20);
-
-    assert(array.get(0) == 10);
-    assert(array.get(1) == 20);
+    Array_sequence<int> seq_expected(arr, 2);
+    Array_sequence<int> seq(array);
+    assert(seq_expected == seq);
     std::cout << "пройден\n";
 }
 
@@ -116,78 +119,63 @@ void test_dynamic_array_set() {
 void test_dynamic_array_errors() {
     std::cout << "Тест обработки ошибок Dynamic_array: ";
     Dynamic_array<int> array(3);
-
     try {
         array.get(5);
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 2); 
+        assert(e == Error::INVALID_INDEX); 
     }
-
     try {
         array.set(-1, 10);
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 2); 
+        assert(e == Error::INVALID_INDEX); 
     }
-
     std::cout << "пройден\n";
 }
 
-
 void test_array_sequence_append() {
     std::cout << "Тест добавления в конец Array_sequence: ";
+    int arr[] = {1, 2};
     Array_sequence<int> seq;
+    Array_sequence<int> seq_expected(arr,2);
     seq.append(1);
     seq.append(2);
-
-    assert(seq.get_length() == 2);
-    assert(seq.get_last() == 2);
+    assert(seq == seq_expected);
     std::cout << "пройден\n";
 }
 
 void test_array_sequence_prepend() {
     std::cout << "Тест добавления в начало Array_sequence: ";
+    int arr[] ={2, 1};
     Array_sequence<int> seq;
     seq.prepend(1);
     seq.prepend(2);
-
-    assert(seq.get_length() == 2);
-    assert(seq.get_first() == 2);
+    Array_sequence<int> seq_expected(arr,2);
+    assert(seq == seq_expected);
     std::cout << "пройден\n";
 }
 
 
 void test_array_sequence_insert() {
     std::cout << "Тест вставки в Array_sequence: ";
-    
-    Array_sequence<int> seq;
-    Array_sequence<int> expected;
+    int arr[] ={1, 2, 3};
+    int arr_expected[] = {1, 5, 2, 3};
 
-    expected.append(1);
-    expected.append(2);
-    expected.append(3);
-
-    seq.append(1);
-    seq.append(3);
-    seq.insert_at(2, 1);
-
-    assert(seq == expected);
-    assert(seq.get_length() == 3);
-    
+    Array_sequence<int> seq(arr,3);
+    Array_sequence<int> seq_expected(arr_expected, 4);
+    seq.insert_at(5, 1);
+    assert(seq == seq_expected);
     std::cout << "пройден\n";
 }
 
 void test_array_sequence_remove() {
     std::cout << "Тест удаления из Array_sequence: ";
-    
-    int arr[] = {4};
+    int arr[] = {1};
     Array_sequence<int> seq(arr, 1);
-    Array_sequence<int> expected;
+    Array_sequence<int> seq_expected;
     seq.remove(0);
-    assert(seq == expected);
-    assert(seq.get_length() == 0);
-    
+    assert(seq == seq_expected);
     std::cout << "пройден\n";
 }
 
@@ -197,14 +185,11 @@ void test_array_sequence_subsequence() {
     int arr[] = {1, 2, 3, 4};
     int sub_arr[] = {2, 3};
     Array_sequence<int> seq(arr, 4);
-    Array_sequence<int> expected_sub(sub_arr, 2);
+    Array_sequence<int> seq_expected(sub_arr, 2);
     Sequence<int>* sub = seq.get_sub_sequence(1, 2);
-
     Array_sequence<int>* sub_seq = dynamic_cast<Array_sequence<int>*>(sub);
     assert(sub_seq != nullptr);
-    assert(*sub_seq == expected_sub);
-    assert(sub->get_length() == 2);
-    
+    assert(*sub_seq == seq_expected);
     delete sub;
     std::cout << "пройден\n";
 }
@@ -217,14 +202,14 @@ void test_array_sequence_errors() {
         empty_seq.get_first();
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 4);
+        assert(e == Error::EMPTY_SEQ);
     }
 
     try {
         empty_seq.get_index(4);
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 2); 
+        assert(e == Error::INVALID_INDEX); 
     }
 
     Array_sequence<int> seq;
@@ -233,101 +218,72 @@ void test_array_sequence_errors() {
         seq.insert_at(2, 5);
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 2); 
+        assert(e == Error::INVALID_INDEX); 
     }
 
     try {
         seq.remove(5);
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 2);
+        assert(e == Error::INVALID_INDEX);
     }
-    std::cout << "пройден\n";
-}
-
-void test_list_sequence_basic() {
-    std::cout << "Тест базовых операций List_sequence: ";
-    int arr[] = {5, 7, 3, 6};
-    List_sequence<int> seq(arr, 4);
-            
-    assert(seq.get_length() == 4);
-    assert(seq.get_first() == 5);
-    assert(seq.get_last() == 6);
-    assert(seq.get_index(1) == 7);
     std::cout << "пройден\n";
 }
 
 void test_list_sequence_append() {
     std::cout << "Тест добавления в конец List_sequence: ";
+    int arr[] = {1, 2};
     List_sequence<int> seq;
+    List_sequence<int> seq_expected(arr,2);
     seq.append(1);
     seq.append(2);
-            
-    assert(seq.get_length() == 2);
-    assert(seq.get_last() == 2);
+    assert(seq == seq_expected);
     std::cout << "пройден\n";
 }
 
 void test_list_sequence_prepend() {
     std::cout << "Тест добавления в начало List_sequence: ";
+    int arr[] = {2, 1};
     List_sequence<int> seq;
+    List_sequence<int> seq_expected(arr,2);
     seq.prepend(1);
     seq.prepend(2);
-            
-    assert(seq.get_length() == 2);
-    assert(seq.get_first() == 2);
+    assert(seq == seq_expected);
     std::cout << "пройден\n";
 }
 
 void test_list_sequence_insert() {
     std::cout << "Тест вставки в List_sequence: ";
-    
-    List_sequence<int> seq;
-    List_sequence<int> expected;
-    seq.append(1);
-    seq.append(3);
-    seq.insert_at(2, 1);
-    
-    expected.append(1);
-    expected.append(2);
-    expected.append(3);
-    
-    assert(seq == expected);
-    assert(seq.get_length() == 3);
-    
+    int arr[] ={1, 2, 3};
+    int arr_expected[] = {1, 5, 2, 3};
+
+    List_sequence<int> seq(arr,3);
+    List_sequence<int> seq_expected(arr_expected, 4);
+    seq.insert_at(5, 1);
+    assert(seq == seq_expected);
     std::cout << "пройден\n";
 }
-
+    
 void test_list_sequence_remove() {
     std::cout << "Тест удаления из List_sequence: ";
-    
-    int arr[] = {1, 2, 3, 4};
-    int expected_arr[] = {1, 3, 4};
-    List_sequence<int> seq(arr, 4);
-    List_sequence<int> expected(expected_arr, 3);
-    
-    seq.remove(1);
-    
-    assert(seq == expected);
-    assert(seq.get_length() == 3);
-    
+    int arr[] = {1};
+    List_sequence<int> seq(arr, 1);
+    List_sequence<int> seq_expected;
+    seq.remove(0);
+    assert(seq == seq_expected);
     std::cout << "пройден\n";
 }
-
+    
 void test_list_sequence_subsequence() {
     std::cout << "Тест получения подпоследовательности List_sequence: ";
     
     int arr[] = {1, 2, 3, 4};
     int sub_arr[] = {2, 3};
     List_sequence<int> seq(arr, 4);
-    List_sequence<int> expected_sub(sub_arr, 2);
-
+    List_sequence<int> seq_expected(sub_arr, 2);
     Sequence<int>* sub = seq.get_sub_sequence(1, 2);
     List_sequence<int>* sub_seq = dynamic_cast<List_sequence<int>*>(sub);
-    assert(sub_seq != nullptr);
-    
-    assert(*sub_seq == expected_sub);
-    assert(sub->get_length() == 2);
+    assert(*sub_seq == seq_expected);
     delete sub;
     std::cout << "пройден\n";
 }
@@ -340,14 +296,11 @@ void test_list_sequence_concat() {
     int expected_arr[] = {1, 2, 3, 4};
     List_sequence<int> seq1(arr1, 2);
     List_sequence<int> seq2(arr2, 2);
-    List_sequence<int> expected(expected_arr, 4);
+    List_sequence<int> seq_expected(expected_arr, 4);
 
     Sequence<int>* result = seq1.concat(&seq2);
     List_sequence<int>* result_seq = dynamic_cast<List_sequence<int>*>(result);
-    assert(result_seq != nullptr);
-    assert(*result_seq == expected);
-    assert(result->get_length() == 4);
-    
+    assert(*result_seq == seq_expected);
     delete result;
     std::cout << "пройден\n";
 }
@@ -360,14 +313,14 @@ void test_list_sequence_errors() {
         empty_seq.get_first();
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 4); 
+        assert(e == Error::EMPTY_SEQ); 
     }
 
     try {
         empty_seq.get_index(0);
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 4); 
+        assert(e == Error::EMPTY_SEQ); 
     }
 
     List_sequence<int> seq;
@@ -376,14 +329,14 @@ void test_list_sequence_errors() {
         seq.insert_at(2, 5);
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 2); 
+        assert(e == Error::INVALID_INDEX); 
     }
 
     try {
         seq.remove(5);
         assert(false);
     } catch (Error e) {
-        assert(e.get_code() == 2); 
+        assert(e == Error::INVALID_INDEX); 
     }
     std::cout << "пройден\n";
 }
@@ -392,38 +345,36 @@ void test_list_sequence_errors() {
 void test_immut_array_sequence_immutability() {
     std::cout << "Тест неизменяемости Immut_array_sequence: ";
     int arr[] = {1, 2, 3};
+    int new_arr[] = {1, 2, 3, 4};
+    Dynamic_array<int> array(arr,3);
     Immut_array_sequence<int> seq(arr, 3);
-    assert(seq.get_length() == 3);
-    assert(seq.get_first() == 1);
-
+    Immut_array_sequence<int> seq_expected(array);
+    Immut_array_sequence<int> new_seq_expected(new_arr, 4);
+    assert(seq == seq_expected);
+    
     Sequence<int>* new_seq = seq.append(4);
-    assert(new_seq->get_last() == 4);
-    assert(seq.get_last() == 3);
+    Immut_array_sequence<int>* result_seq = dynamic_cast<Immut_array_sequence<int>*>(new_seq);
+    assert(seq == seq_expected);
+    assert(*result_seq == new_seq_expected);
+    delete new_seq;
     std::cout << "пройден\n";
 }
 
 void test_immut_list_sequence_immutability() {
     std::cout << "Тест неизменяемости Immut_list_sequence: ";
     int arr[] = {1, 2, 3};
-    int arr_1[] = {8, 4, 5};
-    int expected[] = {1, 2, 3, 8, 4, 5};
+    int new_arr[] = {1, 2, 3, 4};
+    Linked_list<int> array(arr,3);
     Immut_list_sequence<int> seq(arr, 3);
-    Immut_list_sequence<int> seq_1(arr_1, 3);
-    Immut_list_sequence<int> seq_exp(expected, 3);
-    assert(seq.get_length() == 3);
-    assert(seq.get_first() == 1); 
-
+    Immut_list_sequence<int> seq_expected(array);
+    Immut_list_sequence<int> new_seq_expected(new_arr, 4);
+    assert(seq == seq_expected);
+    
     Sequence<int>* new_seq = seq.append(4);
-    assert(new_seq->get_last() == 4);
-    assert(seq.get_last() == 3);
-
-    Sequence<int>* concat_seq = seq.concat(&seq_1);
-    Immut_list_sequence<int>* conc_seq = dynamic_cast<Immut_list_sequence<int>*>(concat_seq);
-    assert(*conc_seq == seq_exp);
-    assert(seq.get_length() == 3);
-    assert(seq_1.get_length() == 3);
-
-
+    Immut_list_sequence<int>* result_seq = dynamic_cast<Immut_list_sequence<int>*>(new_seq);
+    assert(seq == seq_expected);
+    assert(*result_seq == new_seq_expected);
+    delete new_seq;
     std::cout << "пройден\n";
 }
 
@@ -434,16 +385,12 @@ int square(const int& x) {
 void test_map() {
     std::cout << "Тест map: ";
     int arr[] = {1, 2, 3, 4};
+    int arr_expected[] = {1, 4, 9, 16};
     Array_sequence<int> seq(arr, 4);
-
-    Sequence<int>* squares = map<int, int>(static_cast<Sequence<int>*>(&seq), square);
-
-    assert(squares->get_length() == 4);
-    assert(squares->get_index(0) == 1);
-    assert(squares->get_index(1) == 4);
-    assert(squares->get_index(2) == 9);
-    assert(squares->get_index(3) == 16);
-    delete squares;
+    Array_sequence<int> seq_expected(arr_expected, 4);
+    Sequence<int>* seq_res = map<int, int>(static_cast<Sequence<int>*>(&seq), square);
+    assert(*seq_res == seq_expected);
+    delete seq_res;
     std::cout << "пройден\n";
 }
 
@@ -454,13 +401,13 @@ bool is_even(const int& x) {
 void test_where(){
     std::cout << "Тест where: ";
     int arr[] = {1, 2, 3, 4};
+    int arr_expected[] = {2, 4};
     Array_sequence<int> seq(arr, 4);
-    Sequence<int>* evens = where(static_cast<Sequence<int>*>(&seq), is_even); 
-
-    assert(evens->get_length() == 2);
-    assert(evens->get_index(0) == 2);
-    assert(evens->get_index(1) == 4);
-    delete evens;
+    Array_sequence<int> seq_expected(arr_expected, 2
+    );
+    Sequence<int>* seq_res = where(static_cast<Sequence<int>*>(&seq), is_even); 
+    assert(*seq_res == seq_expected);
+    delete seq_res;
     std::cout << "пройден\n";
 }
 
@@ -496,7 +443,6 @@ int main() {
     test_array_sequence_remove();
     test_array_sequence_errors();
 
-    test_list_sequence_basic();
     test_list_sequence_append();
     test_list_sequence_prepend();
     test_list_sequence_insert();

@@ -32,8 +32,8 @@ public:
 template <class T>
 Dynamic_array<T>::Dynamic_array(T* items, int count) {
     if (count < 0) {
-        errors_detection(3);
-        throw Error(3);
+        errors_detection(Error::INVALID_ARGUMENT);
+        throw Error(Error::INVALID_ARGUMENT);
     }
 
     size = count;
@@ -45,8 +45,8 @@ Dynamic_array<T>::Dynamic_array(T* items, int count) {
 template <class T>
 Dynamic_array<T>::Dynamic_array(int size) {
     if (size < 0) {
-        errors_detection(3); 
-        throw Error(3);
+        errors_detection(Error::INVALID_ARGUMENT); 
+        throw Error(Error::INVALID_ARGUMENT);
     }
 
     this->size = size;
@@ -71,8 +71,8 @@ Dynamic_array<T>::~Dynamic_array() {
 template <class T>
 T Dynamic_array<T>::get(int index) const {
     if (index < 0 || index >= size) {
-        errors_detection(2); 
-        throw Error(2);
+        errors_detection(Error::INVALID_INDEX); 
+        throw Error(Error::INVALID_INDEX);
     }
 
     return data[index];
@@ -86,12 +86,12 @@ int Dynamic_array<T>::get_size() const {
 template <class T>
 void Dynamic_array<T>::remove(int index) {
     if (size == 0) {
-        errors_detection(4);
-        throw Error(4);
+        errors_detection(Error::EMPTY_SEQ);
+        throw Error(Error::EMPTY_SEQ);
     }
     if (index < 0 || index >= size) {
-        errors_detection(2); 
-        throw Error(2);
+        errors_detection(Error::INVALID_INDEX); 
+        throw Error(Error::INVALID_INDEX);
     }
 
     for (int i = index; i < size - 1; ++i) {
@@ -103,8 +103,8 @@ void Dynamic_array<T>::remove(int index) {
 template <class T>
 void Dynamic_array<T>::set(int index, T value) {
     if (index < 0 || index >= size) {
-        errors_detection(2); 
-        throw Error(2);
+        errors_detection(Error::INVALID_INDEX); 
+        throw Error(Error::INVALID_INDEX);
     }
     data[index] = value;
 }
@@ -112,8 +112,8 @@ void Dynamic_array<T>::set(int index, T value) {
 template <class T>
 void Dynamic_array<T>::resize(int new_size) {
     if (new_size < 0) {
-        errors_detection(3);
-        throw Error(3);
+        errors_detection(Error::INVALID_ARGUMENT);
+        throw Error(Error::INVALID_ARGUMENT);
     }
 
     if (new_size == 0) {
@@ -138,8 +138,8 @@ void Dynamic_array<T>::resize(int new_size) {
 template <class T>
 Dynamic_array<T>* Dynamic_array<T>::get_sub_array(int start_index, int end_index) const {
     if (start_index < 0 || end_index >= size || start_index > end_index) {
-        errors_detection(2); 
-        throw Error(2);
+        errors_detection(Error::INVALID_INDEX); 
+        throw Error(Error::INVALID_INDEX);
     }
 
     int count = end_index - start_index + 1;
@@ -164,8 +164,8 @@ void Dynamic_array<T>::print_array(int n) {
 template <class T>
 T& Dynamic_array<T>::operator[](int index) {
     if (index < 0 || index >= size) {
-        errors_detection(2); 
-        throw Error(2);
+        errors_detection(Error::INVALID_INDEX); 
+        throw Error(Error::INVALID_INDEX);
     }
     return data[index];
 }
@@ -173,8 +173,8 @@ T& Dynamic_array<T>::operator[](int index) {
 template <class T>
 const T& Dynamic_array<T>::operator[](int index) const {
     if (index < 0 || index >= size) {
-        errors_detection(2);
-        throw Error(2);
+        errors_detection(Error::INVALID_INDEX);
+        throw Error(Error::INVALID_INDEX);
     }
     return data[index];
 }

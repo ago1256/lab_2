@@ -7,13 +7,13 @@ int error_input(int min, int max) {
     int value;
     while (true) {
         if (!(std::cin >> value)) {
-            errors_detection(3);
+            errors_detection(Error::INVALID_ARGUMENT);
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
         }
         if (value < min || value > max) {
-            errors_detection(2);
+            errors_detection(Error::INVALID_INDEX);
             continue;
         }
         return value;
@@ -25,7 +25,7 @@ T value_typed() {
     T value;
     std::cout << "Введите значение:\n";
     if (!(std::cin >> value)) {
-        throw Error(3);
+        throw Error(Error::INVALID_ARGUMENT);
     }
     return value;
 }
@@ -83,7 +83,7 @@ void add_sequence(int seq_kind, Seq_type seq_type, std::vector<Any_sequence>& al
              new_seq.seq_kind = Seq_kind::IMMUT_LINKED_LIST;
             break;
         }
-        default: throw Error(3);
+        default: throw Error(Error::INVALID_ARGUMENT);
     }
     new_seq.ptr = static_cast<void*>(seq);
     all_sequences.push_back(new_seq);
@@ -127,7 +127,7 @@ void prepend_to_seq(std::vector<Any_sequence>& all_sequences) {
     int index = error_input(0, all_sequences.size() - 1);
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (all_sequences[index].seq_kind == Seq_kind::IMMUT_LINKED_LIST || all_sequences[index].seq_kind == Seq_kind::IMMUT_ARRAY){
-        throw Error(1);
+        throw Error(Error::IMMUT_SEQ);
     }
     auto new_seq = [&]<typename T>() {
         Sequence<T>* seq;
@@ -145,12 +145,12 @@ void prepend_to_seq(std::vector<Any_sequence>& all_sequences) {
 }
 
 void append_to_seq(std::vector<Any_sequence>& all_sequences) {
-    if (all_sequences.empty()) throw Error(4);
+    if (all_sequences.empty()) throw Error(Error::EMPTY_SEQ);
     std::cout << "Введите индекс последовательности из диапазона";
     int index = error_input(0, all_sequences.size()-1);
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (all_sequences[index].seq_kind == Seq_kind::IMMUT_LINKED_LIST || all_sequences[index].seq_kind == Seq_kind::IMMUT_ARRAY){
-        throw Error(1);
+        throw Error(Error::IMMUT_SEQ);
     }
 
     auto new_seq = [&]<typename T>() {
@@ -165,18 +165,18 @@ void append_to_seq(std::vector<Any_sequence>& all_sequences) {
 }
 
 void remove_at_seq(std::vector<Any_sequence>& all_sequences) {
-    if (all_sequences.empty()) throw Error(4);
+    if (all_sequences.empty()) throw Error(Error::EMPTY_SEQ);
     std::cout << "Введите индекс последовательности из диапазона";
     int index = error_input(0, all_sequences.size()-1);
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (all_sequences[index].seq_kind == Seq_kind::IMMUT_LINKED_LIST || all_sequences[index].seq_kind == Seq_kind::IMMUT_ARRAY){
-        throw Error(1);
+        throw Error(Error::IMMUT_SEQ);
     }
     auto new_seq = [&]<typename T>() {
         Sequence<T>* seq;
         convert_sequence(all_sequences[index], seq);
         if (seq->get_length() == 0) {
-        throw Error(4);
+        throw Error(Error::EMPTY_SEQ);
         }
         std::cout << "Введите индекс для удаления из диапазона";
         int index_value = error_input(0, seq->get_length() - 1);
@@ -193,7 +193,7 @@ void insert_at_seq(std::vector<Any_sequence>& all_sequences) {
     int index = error_input(0, all_sequences.size()-1);
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (all_sequences[index].seq_kind == Seq_kind::IMMUT_LINKED_LIST || all_sequences[index].seq_kind == Seq_kind::IMMUT_ARRAY){
-        throw Error(1);
+        throw Error(Error::IMMUT_SEQ);
     }
     auto new_seq = [&]<typename T>() {
         Sequence<T>* seq;
@@ -212,19 +212,19 @@ void insert_at_seq(std::vector<Any_sequence>& all_sequences) {
 
 
 void get_sub_sequence(std::vector<Any_sequence>& all_sequences) {
-    if (all_sequences.empty()) throw Error(4);
+    if (all_sequences.empty()) throw Error(Error::EMPTY_SEQ);
 
     std::cout << "Введите индекс последовательности из диапазона";
     int index = error_input(0, all_sequences.size()-1);
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (all_sequences[index].seq_kind == Seq_kind::IMMUT_LINKED_LIST || all_sequences[index].seq_kind == Seq_kind::IMMUT_ARRAY){
-        throw Error(1);
+        throw Error(Error::IMMUT_SEQ);
     }
     auto new_seq = [&]<typename T>() {
         Sequence<T>* seq;
         convert_sequence(all_sequences[index], seq);
         if (seq->get_length() == 0) {
-        throw Error(4);
+        throw Error(Error::EMPTY_SEQ);
         }
         std::cout << "Введите начальный индекс из диапазона";
         int start_index = error_input(0, seq->get_length()-1);
@@ -257,13 +257,13 @@ void concat_sequences(std::vector<Any_sequence>& all_sequences) {
     int index_2 = error_input(0, all_sequences.size()-1);
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (all_sequences[index_1].seq_kind == Seq_kind::IMMUT_LINKED_LIST || all_sequences[index_1].seq_kind == Seq_kind::IMMUT_ARRAY){
-        throw Error(1);
+        throw Error(Error::IMMUT_SEQ);
     }
     if (all_sequences[index_2].seq_kind == Seq_kind::IMMUT_LINKED_LIST || all_sequences[index_2].seq_kind == Seq_kind::IMMUT_ARRAY){
-        throw Error(1);
+        throw Error(Error::IMMUT_SEQ);
     }
     if (all_sequences[index_1].type != all_sequences[index_2].type || all_sequences[index_1].seq_kind != all_sequences[index_2].seq_kind) {
-            throw Error(5);
+            throw Error(Error::INCOMPATIBLE_TYPES);
     }
     auto new_seq = [&]<typename T>() {
         Sequence<T>* seq_1;

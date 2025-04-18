@@ -30,7 +30,6 @@ void test_array_sequence_subsequence();
 void  test_array_sequence_remove();
 void test_array_sequence_errors();
 
-void test_list_sequence_basic();
 void test_list_sequence_append();
 void test_list_sequence_prepend();
 void test_list_sequence_insert();

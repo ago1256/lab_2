@@ -79,7 +79,7 @@ int enter() {
             }
         }
         catch(Error er){
-            errors_detection(er.get_code());
+            errors_detection(er);
             continue;
         }
     }
