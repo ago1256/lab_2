@@ -9,7 +9,7 @@
 #include"immut_array_sequence.h"
 #include"immut_list_sequence.h"
 #include"errors.h"
-#include"additional_ops.h"
+#include"func.h"
 
 
 void test_linked_list_basic();

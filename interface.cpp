@@ -10,7 +10,7 @@
 
 
 int enter() {
-    std::vector<Any_sequence> all_sequences;
+    std::vector<Sequence<int>*> all_sequences;
     while (true) {
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         system("cls"); 
@@ -33,7 +33,7 @@ int enter() {
         
         switch (operation_type) {
             case 1: {
-                create_sequence(all_sequences); 
+                add_sequence(all_sequences); 
                 break;
             }
             case 2: {

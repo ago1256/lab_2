@@ -27,6 +27,7 @@ public:
     void print_array(int n);
     T& operator[](int index);
     const T& operator[](int index) const;
+
 };
 
 template <class T>

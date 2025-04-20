@@ -19,7 +19,6 @@ public:
     Array_sequence(const Dynamic_array<T>& array);
     Array_sequence(T* arr, int count_array);
     Array_sequence(const Array_sequence<T>& other);
-    ~Array_sequence() override;
 
     T get_first() const override;
     T get_last() const override;
@@ -40,7 +39,6 @@ public:
     Sequence<T>* instance() override;
     Sequence<T>* clone() const override;
     bool operator==(const Sequence<T>& other) const override;
-
 };
 
 template <typename T>
@@ -77,11 +75,6 @@ Array_sequence<T>::Array_sequence(const Array_sequence<T>& other) {
     count = other.count;
     capacity = other.capacity;
     items = new Dynamic_array<T>(*other.items);
-}
-
-template <typename T>
-Array_sequence<T>::~Array_sequence() {
-    delete items;
 }
 
 template <typename T>
@@ -243,3 +236,4 @@ bool Array_sequence<T>::operator==(const Sequence<T>& other) const {
     }
     return true;
 }
+

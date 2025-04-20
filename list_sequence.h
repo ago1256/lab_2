@@ -16,7 +16,6 @@ public:
     List_sequence(T* items, int count);
     List_sequence(const List_sequence<T>& other);
     List_sequence(const Linked_list<T>& list);
-    ~List_sequence() override;
 
     T get_first() const override;
     T get_last() const override;
@@ -64,10 +63,6 @@ List_sequence<T>::List_sequence(const Linked_list<T>& list) {
     this->list = new Linked_list<T>(list);
 }
 
-template <typename T>
-List_sequence<T>::~List_sequence() {
-    delete list;
-}
 
 template <typename T>
 T List_sequence<T>::get_first() const {

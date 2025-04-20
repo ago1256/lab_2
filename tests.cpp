@@ -388,7 +388,7 @@ void test_map() {
     int arr_expected[] = {1, 4, 9, 16};
     Array_sequence<int> seq(arr, 4);
     Array_sequence<int> seq_expected(arr_expected, 4);
-    Sequence<int>* seq_res = map<int, int>(static_cast<Sequence<int>*>(&seq), square);
+    Sequence<int>* seq_res = map<int, int>(&seq, square);
     assert(*seq_res == seq_expected);
     delete seq_res;
     std::cout << "пройден\n";
@@ -405,7 +405,7 @@ void test_where(){
     Array_sequence<int> seq(arr, 4);
     Array_sequence<int> seq_expected(arr_expected, 2
     );
-    Sequence<int>* seq_res = where(static_cast<Sequence<int>*>(&seq), is_even); 
+    Sequence<int>* seq_res = where(&seq, is_even); 
     assert(*seq_res == seq_expected);
     delete seq_res;
     std::cout << "пройден\n";
@@ -419,7 +419,7 @@ void test_reduce(){
     std::cout << "Тест reduce: ";
     int arr[] = {1, 2, 3, 4};
     Array_sequence<int> seq(arr, 4);
-    int result = reduce(static_cast<Sequence<int>*>(&seq), sum, 0);
+    int result = reduce(&seq, sum, 0);
     assert(result == 10);
     std::cout << "пройден\n";
 }
