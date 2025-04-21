@@ -19,6 +19,7 @@ public:
     Array_sequence(const Dynamic_array<T>& array);
     Array_sequence(T* arr, int count_array);
     Array_sequence(const Array_sequence<T>& other);
+    ~Array_sequence() = default;
 
     T get_first() const override;
     T get_last() const override;
@@ -109,20 +110,11 @@ Sequence<T>* Array_sequence<T>::get_sub_sequence(int start_index, int end_index)
 
 template <typename T>
 Sequence<T>* Array_sequence<T>::concat(const Sequence<T>* other) const {
-    auto other_array = dynamic_cast<const Array_sequence<T>*>(other);
-
-
-    int res_size = count + other_array->count;
-    Dynamic_array<T>* result = new Dynamic_array<T>(res_size);
-    
-    for (int i = 0; i < count; i++) {
-        result->set(i, items->get(i));
-    }
-    for (int j = 0; j < other_array->count; j++) {
-        result->set(j + count, other_array->get_index(j));
-    }
-    
-    return seq_by_arr(result);
+    Array_sequence<T>* concat_seq = new Array_sequence<T>(*this);
+        for (int i = 0; i < other->get_length(); i++) {
+            concat_seq->append(other->get_index(i));
+        }
+        return concat_seq;
 }
 
 template <typename T>
@@ -175,7 +167,7 @@ Sequence<T>* Array_sequence<T>::remove(int ind) {
     count--;
     return this;
     }
-    /////////////////////////////////////////////////////////////////
+
 }
 
 template <typename T>
@@ -236,4 +228,3 @@ bool Array_sequence<T>::operator==(const Sequence<T>& other) const {
     }
     return true;
 }
-

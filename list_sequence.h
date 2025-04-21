@@ -16,6 +16,7 @@ public:
     List_sequence(T* items, int count);
     List_sequence(const List_sequence<T>& other);
     List_sequence(const Linked_list<T>& list);
+    ~List_sequence() = default;
 
     T get_first() const override;
     T get_last() const override;
@@ -92,10 +93,11 @@ Sequence<T>* List_sequence<T>::get_sub_sequence(int start_index, int end_index) 
 
 template <typename T>
 Sequence<T>* List_sequence<T>::concat(const Sequence<T>* other) const {
-    auto other_list = dynamic_cast<const List_sequence<T>*>(other);
-
-    Linked_list<T>* result = list->concat(other_list->list);
-    return seq_by_list(result);
+    List_sequence<T>* concat_seq = new List_sequence<T>(*this);
+    for (int i = 0; i < other->get_length(); i++) {
+        concat_seq->append(other->get_index(i));
+    }
+    return concat_seq;
 }
 
 template <typename T>
@@ -154,3 +156,4 @@ bool List_sequence<T>::operator==(const Sequence<T>& other) const {
     }
     return true;
 }
+
