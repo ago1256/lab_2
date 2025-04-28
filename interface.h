@@ -14,6 +14,7 @@
 #include "immut_list_sequence.h"
 #include "sequence.h"
 #include"errors.h"
-#include"func.h"
+#include"user.h"
 
 int enter();
+int error_input(int min, int max);

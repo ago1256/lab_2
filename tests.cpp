@@ -100,6 +100,7 @@ void test_dynamic_array_resize() {
     Dynamic_array<int> array(3);
     array.resize(5);
     assert(array.get_size() == 5);
+    assert(array.get(4)==0);
     std::cout << "пройден\n";
 }
 
@@ -342,7 +343,7 @@ void test_list_sequence_errors() {
 }
 
 
-void test_immut_array_sequence_immutability() {
+void test_immut_array_sequence() {
     std::cout << "Тест неизменяемости Immut_array_sequence: ";
     int arr[] = {1, 2, 3};
     int new_arr[] = {1, 2, 3, 4};
@@ -360,20 +361,23 @@ void test_immut_array_sequence_immutability() {
     std::cout << "пройден\n";
 }
 
-void test_immut_list_sequence_immutability() {
+void test_immut_list_sequence() {
     std::cout << "Тест неизменяемости Immut_list_sequence: ";
     int arr[] = {1, 2, 3};
     int new_arr[] = {1, 2, 3, 4};
+ 
     Linked_list<int> array(arr,3);
     Immut_list_sequence<int> seq(arr, 3);
     Immut_list_sequence<int> seq_expected(array);
     Immut_list_sequence<int> new_seq_expected(new_arr, 4);
+
     assert(seq == seq_expected);
     
     Sequence<int>* new_seq = seq.append(4);
     Immut_list_sequence<int>* result_seq = dynamic_cast<Immut_list_sequence<int>*>(new_seq);
     assert(seq == seq_expected);
     assert(*result_seq == new_seq_expected);
+
     delete new_seq;
     std::cout << "пройден\n";
 }
@@ -424,6 +428,57 @@ void test_reduce(){
     std::cout << "пройден\n";
 }
 
+
+void test_cycle_beginning() {
+    int items[] = {1, 2, 3, 4, 5};
+    Linked_list<int> list = Linked_list<int>::create_cycle_list(items, 5, 0);
+    bool has_cycle = list.cycle_in_list(); 
+    assert(has_cycle == true);
+    std::cout << "Цикл в начале списка: " << has_cycle << "\n";
+    
+}
+
+void test_cycle_middle() {
+    int items[] = {1, 2, 3, 4, 5};
+    Linked_list<int> list = Linked_list<int>::create_cycle_list(items, 5, 2);
+    bool has_cycle = list.cycle_in_list();
+    assert(has_cycle == true);
+    std::cout << "Цикл в середине списка: " << has_cycle << "\n";
+}
+
+void test_cycle_end() {
+    int items[] = {1, 2, 3, 4, 5};
+    Linked_list<int> list = Linked_list<int>::create_cycle_list(items, 5, 4);
+    bool has_cycle = list.cycle_in_list();
+    assert(has_cycle == true);
+    std::cout << "Цикл в конце списка: "<< has_cycle << "\n";
+}
+
+void test_no_cycle() {
+    int items[] = {1, 2, 3, 4, 5};
+    Linked_list<int> list(items, 5);
+    bool has_cycle = list.cycle_in_list();
+    assert(has_cycle == false);
+    std::cout << "Список без цикла: " << has_cycle << "\n";
+}
+
+void test_empty_list() {
+    Linked_list<int> list;
+    bool has_cycle = list.cycle_in_list();
+    assert(has_cycle == false);
+    std::cout << "Пустой список: " << has_cycle << "\n";
+}
+
+void test_single_element_with_cycle() {
+    int items[] = {1};
+    Linked_list<int> list = Linked_list<int>::create_cycle_list(items, 1, 0);
+    bool has_cycle = list.cycle_in_list();
+    assert(has_cycle == true);
+    std::cout << "Список из одного элемента с циклом: " << has_cycle << "\n";
+}
+
+
+
 int main() {
     test_linked_list_basic();
     test_linked_list_append();
@@ -451,12 +506,18 @@ int main() {
     test_list_sequence_concat();
     test_list_sequence_errors();
 
-    test_immut_array_sequence_immutability();
-    test_immut_list_sequence_immutability();
+    test_immut_array_sequence();
+    test_immut_list_sequence();
 
     test_map();
     test_where();
     test_reduce();
+    test_cycle_beginning(); 
+    test_cycle_middle();
+    test_cycle_end();
+    test_empty_list();
+    test_no_cycle();
+    test_single_element_with_cycle();
 
     std::cout << "\nВсе тесты пройдены))\n";
     return 0;

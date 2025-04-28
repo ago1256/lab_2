@@ -22,7 +22,7 @@ public:
 
     void remove(int index);
     void set(int index, T value);
-    void resize(int new_size);
+    void resize(int new_size, const T& value = T());
     Dynamic_array<T>* get_sub_array(int start_index, int end_index) const;
     void print_array(int n);
     T& operator[](int index);
@@ -111,26 +111,26 @@ void Dynamic_array<T>::set(int index, T value) {
 }
 
 template <class T>
-void Dynamic_array<T>::resize(int new_size) {
+void Dynamic_array<T>::resize(int new_size, const T& value) {
     if (new_size < 0) {
         errors_detection(Error::INVALID_ARGUMENT);
         throw Error(Error::INVALID_ARGUMENT);
     }
-
     if (new_size == 0) {
         delete[] data;
         data = nullptr;
         size = 0;
         return;
     }
-
     T* new_data = new T[new_size];
-    int elements_to_copy = (new_size < size) ? new_size : size;
 
+    int elements_to_copy = (new_size < size) ? new_size : size;
     for (int i = 0; i < elements_to_copy; i++) {
         new_data[i] = data[i];
     }
-
+    for (int i = size; i < new_size; i++) {
+        new_data[i] = value;
+    }
     delete[] data;
     data = new_data;
     size = new_size;
@@ -159,7 +159,7 @@ void Dynamic_array<T>::print_array(int n) {
     for(int i = 0; i < n; i++) {
         std::cout << data[i] << ' ';
     }
-    std::cout << "]" << std::endl;
+    std::cout << "]";
 }
 
 template <class T>

@@ -23,5 +23,6 @@ virtual void print_seq() const= 0;
 virtual Sequence<T>* instance() = 0;
 virtual Sequence<T>* clone() const = 0;
 virtual bool operator==(const Sequence<T>& other) const = 0;
+virtual Sequence<T>& operator=(const Sequence<T>& other) = 0; 
 
 };

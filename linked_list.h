@@ -20,6 +20,7 @@ private:
 public:
     Linked_list();
     Linked_list(T* items, int count);
+    Linked_list(int count);
     Linked_list(const Linked_list<T>& list);
     ~Linked_list();
 
@@ -35,12 +36,38 @@ public:
     void remove(int index);
     void print_list();
     Linked_list<T>* concat(Linked_list<T>* list);
+    bool cycle_in_list();
+    static Linked_list<T> create_cycle_list (const T* items, int size_list, int cycle_pos);
+
 };
 
 template <class T>
 Linked_list<T>::Linked_list() {
     root = nullptr;
     size = 0;
+}
+
+template <class T>
+Linked_list<T>::Linked_list(int count){
+    if (count < 0) {
+        errors_detection(Error::INVALID_ARGUMENT); 
+        throw Error(Error::INVALID_ARGUMENT);
+    }
+    if (count == 0) {
+        root = nullptr;
+        size = 0;
+        return;
+    }
+
+    size = count;
+    root = new Node{T(), nullptr}; 
+    Node* curr = root;
+
+    for (int i = 1; i < count; i++) {
+        Node* new_node = new Node{T(), nullptr}; 
+        curr->next = new_node;
+        curr = new_node;
+    }
 }
 
 template <class T>
@@ -90,12 +117,14 @@ Linked_list<T>::Linked_list(const Linked_list<T>& list) {
 
 template <class T>
 Linked_list<T>::~Linked_list() {
-    Node* curr = root;
-    while (curr != nullptr) {
-        Node* temp = curr;
-        curr = curr->next;
-        delete temp;
-    }    
+    if (root == nullptr) return;
+
+    Node* current = root;
+    for (int i = 0; i < size && current != nullptr; ++i) {
+        Node* next = current->next;
+        delete current;
+        current = next;
+    }
 }
 
 template <class T>
@@ -248,7 +277,7 @@ void Linked_list<T>::print_list() {
         std::cout << curr->data << " ";
         curr = curr->next;
     }
-    std::cout << "]" << std::endl;
+    std::cout << "]";
 }
 
 template <class T>
@@ -262,3 +291,51 @@ Linked_list<T>* Linked_list<T>::concat(Linked_list<T>* list) {
     }
     return result;  
 }
+
+template <typename T>
+bool Linked_list<T>::cycle_in_list() {
+    if (root == nullptr || root->next == nullptr) {
+        return false; 
+    }
+    Node* curr_1 = root;
+    Node* curr_2 = root;
+    while (curr_2 != nullptr && curr_2->next != nullptr) {
+        curr_1 = curr_1->next;
+        curr_2 = curr_2->next->next;
+
+        if (curr_1 == curr_2) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+
+template <typename T>
+Linked_list<T> Linked_list<T>::create_cycle_list(const T* items, int size_list, int cycle_pos) {
+    Linked_list<T> list;
+    if (size_list == 0) return list;
+
+    list.root = new Node{items[0], nullptr};
+    Node* curr = list.root;
+    Node* cycle_node = (cycle_pos == 0) ? list.root : nullptr;
+
+    for (int i = 1; i < size_list; ++i) {
+        curr->next = new Node{items[i], nullptr};
+        curr = curr->next;
+        if (i == cycle_pos) {
+            cycle_node = curr; 
+        }
+    }
+
+    if (cycle_node != nullptr) {
+        curr->next = cycle_node;
+    }
+    list.size = size_list;
+    return list;
+}
+
+
+

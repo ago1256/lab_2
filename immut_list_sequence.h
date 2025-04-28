@@ -43,7 +43,7 @@ Sequence<T>* Immut_list_sequence<T>::insert_at(T item, int ind) {
 
 template <typename T>
 Sequence<T>* Immut_list_sequence<T>::concat(const Sequence<T>* other) const{
-    auto* new_seq= new Immut_list_sequence<T>(*this);
+    auto* new_seq = new Immut_list_sequence<T>(*this);
     new_seq->List_sequence<T>::concat(other);
     return new_seq;
 }

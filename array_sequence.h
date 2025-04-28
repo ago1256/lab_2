@@ -17,6 +17,7 @@ protected:
 public:
     Array_sequence();
     Array_sequence(const Dynamic_array<T>& array);
+    Array_sequence(int capacity_array);
     Array_sequence(T* arr, int count_array);
     Array_sequence(const Array_sequence<T>& other);
     ~Array_sequence() = default;
@@ -33,7 +34,7 @@ public:
     Sequence<T>* insert_at(T item, int index) override;
     Sequence<T>* remove(int ind) override;
 
-    Array_sequence<T>& operator=(const Array_sequence<T>& other);
+    Sequence<T>& operator=(const Sequence<T>& other);
     void print_seq() const;
     void clear();
 
@@ -50,6 +51,13 @@ Sequence<T>* Array_sequence<T>::seq_by_arr(Dynamic_array<T>* array) const {
 template <typename T>
 Array_sequence<T>::Array_sequence() {
     capacity = 4;
+    count = 0; 
+    items = new Dynamic_array<T>(capacity);
+}
+
+template <typename T>
+Array_sequence<T>::Array_sequence(int capacity_array){
+    capacity = capacity_array;
     count = 0; 
     items = new Dynamic_array<T>(capacity);
 }
@@ -158,36 +166,40 @@ Sequence<T>* Array_sequence<T>::insert_at(T item, int index) {
 
 template <typename T>
 Sequence<T>* Array_sequence<T>::remove(int ind) {
-    if (count == 0) {
-        errors_detection(Error::EMPTY_SEQ);
-        throw Error(Error::EMPTY_SEQ);
-    }
     if (count>0){
     items->remove(ind);
     count--;
     return this;
     }
-
+    else {
+        errors_detection(Error::EMPTY_SEQ);
+        throw Error(Error::EMPTY_SEQ);
+    }
 }
 
 template <typename T>
-Array_sequence<T>& Array_sequence<T>::operator=(const Array_sequence<T>& other) {
-    if (this != &other) {
-        this->clear();
-        if (other.count > 0) {
-            items = new Dynamic_array<T>(other.capacity);
-            capacity = other.capacity;
-            count = other.count;
-        } else {
-            items = nullptr;
-            capacity = 0;
-            count = 0;
-        }
-        
-        for (int i = 0; i < count; ++i) {
-            (*items)[i] = other.items->get(i);
-        }
+Sequence<T>& Array_sequence<T>::operator=(const Sequence<T>& other) {
+    if (this == &other) {
+        return *this;
     }
+    const Array_sequence<T>* other_array_seq = dynamic_cast<const Array_sequence<T>*>(&other);
+
+    this->clear();
+
+    if (other_array_seq->count > 0) {
+        items = new Dynamic_array<T>(other_array_seq->capacity);
+        capacity = other_array_seq->capacity;
+        count = other_array_seq->count;
+
+        for (int i = 0; i < count; ++i) {
+            (*items)[i] = other_array_seq->items->get(i);
+        }
+    } else {
+        items = nullptr;
+        capacity = 0;
+        count = 0;
+    }
+
     return *this;
 }
 
@@ -222,7 +234,7 @@ bool Array_sequence<T>::operator==(const Sequence<T>& other) const {
     }
 
     for (int i = 0; i < this->get_length(); ++i) {
-        if (this->get_index(i) != other.get_index(i)) {
+        if (!(this->get_index(i) == other.get_index(i))) {
             return false;
         }
     }

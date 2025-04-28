@@ -14,6 +14,7 @@ protected:
 public:
     List_sequence();
     List_sequence(T* items, int count);
+    List_sequence(int count_list);
     List_sequence(const List_sequence<T>& other);
     List_sequence(const Linked_list<T>& list);
     ~List_sequence() = default;
@@ -33,6 +34,7 @@ public:
 
     void print_seq() const;
     bool operator==(const Sequence<T>& other) const override;
+    Sequence<T>& operator=(const Sequence<T>& other);
 
     Sequence<T>* instance() override;
     Sequence<T>* clone() const override;
@@ -44,9 +46,14 @@ Sequence<T>* List_sequence<T>::seq_by_list(Linked_list<T>* list) const {
     return new List_sequence<T>(*list);
 }
 
+
 template <typename T>
 List_sequence<T>::List_sequence() {
     list = new Linked_list<T>();
+}
+template <typename T>
+List_sequence<T>::List_sequence(int count_list) {
+    list = new Linked_list<T>(count_list);
 }
 
 template <typename T>
@@ -150,10 +157,22 @@ bool List_sequence<T>::operator==(const Sequence<T>& other) const {
         return false;
     }
     for (int i = 0; i < this->get_length(); ++i) {
-        if (this->get_index(i) != other.get_index(i)) {
+        if (!(this->get_index(i) == other.get_index(i))) {
             return false;
         }
     }
     return true;
 }
 
+template <typename T>
+Sequence<T>& List_sequence<T>::operator=(const Sequence<T>& other) {
+    const List_sequence<T>* other_list_seq = dynamic_cast<const List_sequence<T>*>(&other);
+    delete list;
+    if (other_list_seq->list && other_list_seq->list->get_length() > 0) {
+        list = new Linked_list<T>(*(other_list_seq->list)); 
+    } else {
+        list = new Linked_list<T>(); 
+    }
+
+    return *this;
+}
